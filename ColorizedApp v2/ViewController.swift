@@ -7,9 +7,10 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-
-    @IBOutlet var mainView: UIView!
+final class ViewController: UIViewController {
+    
+    // MARK: IBOutlets
+    @IBOutlet var colorView: UIView!
     
     @IBOutlet var redLabel: UILabel!
     @IBOutlet var greenLabel: UILabel!
@@ -19,14 +20,34 @@ class ViewController: UIViewController {
     @IBOutlet var greenSlider: UISlider!
     @IBOutlet var blueSlider: UISlider!
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-      
+        colorView.layer.cornerRadius = 15
     }
-
-
-    @IBAction func skidersAction() {
+    
+    // MARK: - IBActions
+    @IBAction func sliderAction(_ sender: UISlider) {
+        setColor()
+        switch sender {
+        case redSlider:
+            redLabel.text = string(from: sender)
+        case greenSlider:
+            greenLabel.text = string(from: sender)
+        default:
+            blueLabel.text = string(from: sender)
+        }
+    }
+    
+    // MARK: - Private Methods
+    private func setColor() {
+        colorView.backgroundColor = UIColor(
+            red: CGFloat(redSlider.value),
+            green: CGFloat(greenSlider.value),
+            blue: CGFloat(blueSlider.value),
+            alpha: 1)
+    }
+    
+    private func string(from slider: UISlider) -> String {
+        String(format: "%.2F", slider.value)
     }
 }
-
