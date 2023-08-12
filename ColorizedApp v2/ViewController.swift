@@ -23,6 +23,7 @@ final class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         colorView.layer.cornerRadius = 15
+        setColor()
     }
     
     // MARK: - IBActions
