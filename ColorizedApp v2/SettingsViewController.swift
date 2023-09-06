@@ -7,7 +7,9 @@
 
 import UIKit
 
-final class ViewController: UIViewController {
+final class SettingsViewController: UIViewController {
+    
+    var viewBackgroundColor: UIColor!
     
     // MARK: IBOutlets
     @IBOutlet var colorView: UIView!
@@ -22,13 +24,20 @@ final class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.hidesBackButton = true
         colorView.layer.cornerRadius = 15
-        setColor()
+        colorView.backgroundColor = viewBackgroundColor
+        setValue(for: redLabel, greenLabel, blueLabel)
     }
     
     // MARK: - IBActions
+    @IBAction func doneButtonPressed() {
+        navigationController?.dismiss(animated: true)
+    }
+    
     @IBAction func sliderAction(_ sender: UISlider) {
         setColor()
+        
         switch sender {
         case redSlider:
             redLabel.text = string(from: sender)
@@ -40,6 +49,24 @@ final class ViewController: UIViewController {
     }
     
     // MARK: - Private Methods
+    
+    private func setValue(for labels: UILabel...) {
+        labels.forEach { label in
+            switch label {
+            case redLabel:
+                redLabel.text = string(from: redSlider)
+            case greenLabel:
+                greenLabel.text = string(from: greenSlider)
+            default:
+                blueLabel.text = string(from: blueSlider)
+            }
+        }
+    }
+    
+    private func setValueFromMain() {
+        
+    }
+    
     private func setColor() {
         colorView.backgroundColor = UIColor(
             red: CGFloat(redSlider.value),
@@ -52,3 +79,6 @@ final class ViewController: UIViewController {
         String(format: "%.2F", slider.value)
     }
 }
+
+// MARK: - UITextFieldDelegate
+
