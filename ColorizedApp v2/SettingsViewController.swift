@@ -9,8 +9,6 @@ import UIKit
 
 final class SettingsViewController: UIViewController {
     
-    var viewBackgroundColor: UIColor!
-    
     // MARK: IBOutlets
     @IBOutlet var colorView: UIView!
     
@@ -22,49 +20,90 @@ final class SettingsViewController: UIViewController {
     @IBOutlet var greenSlider: UISlider!
     @IBOutlet var blueSlider: UISlider!
     
+    @IBOutlet var redTextField: UITextField!
+    @IBOutlet var greenTextField: UITextField!
+    @IBOutlet var blueTextField: UITextField!
+    
+    var delegate: SettingsViewControllerDelegate!
+    var viewColor: UIColor!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
         colorView.layer.cornerRadius = 15
-        colorView.backgroundColor = viewBackgroundColor
+        colorView.backgroundColor = viewColor
+        
+        setValue(for: redSlider, greenSlider, blueSlider)
         setValue(for: redLabel, greenLabel, blueLabel)
+        setValue(for: redTextField, greenTextField, blueTextField)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        view.endEditing(true)
     }
     
     // MARK: - IBActions
     @IBAction func doneButtonPressed() {
-        navigationController?.dismiss(animated: true)
+        dismiss(animated: true)
+        delegate.setNewValue(for: colorView.backgroundColor ?? .clear)
     }
     
     @IBAction func sliderAction(_ sender: UISlider) {
-        setColor()
-        
         switch sender {
         case redSlider:
-            redLabel.text = string(from: sender)
+            setValue(for: redTextField)
+            setValue(for: redLabel)
         case greenSlider:
-            greenLabel.text = string(from: sender)
+            setValue(for: greenTextField)
+            setValue(for: greenLabel)
         default:
-            blueLabel.text = string(from: sender)
+            setValue(for: blueTextField)
+            setValue(for: blueLabel)
         }
+        
+        setColor()
     }
     
     // MARK: - Private Methods
-    
     private func setValue(for labels: UILabel...) {
         labels.forEach { label in
             switch label {
             case redLabel:
-                redLabel.text = string(from: redSlider)
+                label.text = string(from: redSlider)
             case greenLabel:
-                greenLabel.text = string(from: greenSlider)
+                label.text = string(from: greenSlider)
             default:
-                blueLabel.text = string(from: blueSlider)
+                label.text = string(from: blueSlider)
             }
         }
     }
     
-    private func setValueFromMain() {
-        
+    private func setValue(for colorSliders: UISlider...) {
+        let ciColor = CIColor(color: viewColor)
+        colorSliders.forEach { slider in
+            switch slider {
+            case redSlider:
+                redSlider.value = Float(ciColor.red)
+            case greenSlider:
+                greenSlider.value = Float(ciColor.green)
+            default:
+                blueSlider.value = Float(ciColor.blue)
+            }
+        }
+    }
+    
+    private func setValue(for textFields: UITextField...) {
+        textFields.forEach { textField in
+            switch textField {
+            case redTextField:
+                textField.text = string(from: redSlider)
+            case greenTextField:
+                textField.text = string(from: greenSlider)
+            default:
+                textField.text = string(from: blueSlider)
+            }
+        }
     }
     
     private func setColor() {
@@ -72,13 +111,15 @@ final class SettingsViewController: UIViewController {
             red: CGFloat(redSlider.value),
             green: CGFloat(greenSlider.value),
             blue: CGFloat(blueSlider.value),
-            alpha: 1)
+            alpha: 1
+        )
     }
     
     private func string(from slider: UISlider) -> String {
         String(format: "%.2F", slider.value)
     }
 }
+
 
 // MARK: - UITextFieldDelegate
 

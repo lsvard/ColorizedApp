@@ -60,13 +60,13 @@
 		0AB796622A87580E008F35F5 /* ColorizedApp v2 */ = {
 			isa = PBXGroup;
 			children = (
-				0AB796712A875811008F35F5 /* Info.plist */,
-				0AB796672A87580E008F35F5 /* SettingsViewController.swift */,
 				0AFE561A2AA7A20800B77173 /* MainViewController.swift */,
+				0AB796672A87580E008F35F5 /* SettingsViewController.swift */,
 				0AB796652A87580E008F35F5 /* SceneDelegate.swift */,
 				0AB796632A87580E008F35F5 /* AppDelegate.swift */,
 				0AB796692A87580E008F35F5 /* Main.storyboard */,
 				0AB7966E2A875811008F35F5 /* LaunchScreen.storyboard */,
+				0AB796712A875811008F35F5 /* Info.plist */,
 				0AB7966C2A875811008F35F5 /* Assets.xcassets */,
 			);
 			path = "ColorizedApp v2";
