@@ -73,6 +73,20 @@ final class SettingsViewController: UIViewController {
     }
     
     // MARK: - Private Methods
+    private func setValue(for sliders: UISlider...) {
+        let ciColor = CIColor(color: viewColor)
+        sliders.forEach { slider in
+            switch slider {
+            case redSlider:
+                redSlider.value = Float(ciColor.red)
+            case greenSlider:
+                greenSlider.value = Float(ciColor.green)
+            default:
+                blueSlider.value = Float(ciColor.blue)
+            }
+        }
+    }
+        
     private func setValue(for labels: UILabel...) {
         labels.forEach { label in
             switch label {
@@ -82,20 +96,6 @@ final class SettingsViewController: UIViewController {
                 label.text = string(from: greenSlider)
             default:
                 label.text = string(from: blueSlider)
-            }
-        }
-    }
-    
-    private func setValue(for colorSliders: UISlider...) {
-        let ciColor = CIColor(color: viewColor)
-        colorSliders.forEach { slider in
-            switch slider {
-            case redSlider:
-                redSlider.value = Float(ciColor.red)
-            case greenSlider:
-                greenSlider.value = Float(ciColor.green)
-            default:
-                blueSlider.value = Float(ciColor.blue)
             }
         }
     }
@@ -113,8 +113,8 @@ final class SettingsViewController: UIViewController {
         }
     }
     
-    private func setValueFromTF(for colorSliders: UISlider...) {
-        colorSliders.forEach { slider in
+    private func setValueFromTF(for sliders: UISlider...) {
+        sliders.forEach { slider in
             switch slider {
             case redSlider:
                 redTextField.delegate = self
@@ -139,23 +139,7 @@ final class SettingsViewController: UIViewController {
         String(format: "%.2F", slider.value)
     }
     
-    private func showAlert(
-        withTitle title: String,
-        andMessage message: String,
-        for textField: UITextField) {
-        let alert = UIAlertController(
-            title: title,
-            message: message,
-            preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
-            textField.text = "1.00"
-        }
-        
-        alert.addAction(okAction)
-        present(alert, animated: true)
-    }
-    
-    func addToolBar(_ textField: UITextField) {
+    private func addToolBar(_ textField: UITextField) {
         let toolBar = UIToolbar()
         
         let doneButton = UIBarButtonItem(
@@ -192,6 +176,7 @@ extension SettingsViewController: UITextFieldDelegate {
                 blueSlider.value = numberValue
                 setValue(for: blueLabel)
             }
+            
             setColor()
                 
         } else {
@@ -204,6 +189,24 @@ extension SettingsViewController: UITextFieldDelegate {
     }
 }
 
+// MARK: - UIAlertController
+extension SettingsViewController {
+    private func showAlert(
+        withTitle title: String,
+        andMessage message: String,
+        for textField: UITextField) {
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            textField.text = "1.00"
+        }
+        
+        alert.addAction(okAction)
+        present(alert, animated: true)
+    }
+}
 
 
 
