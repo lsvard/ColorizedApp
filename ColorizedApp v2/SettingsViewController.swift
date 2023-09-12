@@ -29,19 +29,13 @@ final class SettingsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.hidesBackButton = true
         colorView.layer.cornerRadius = 15
         
         colorView.backgroundColor = viewColor
-
+        
         setValue(for: redSlider, greenSlider, blueSlider)
         setValue(for: redLabel, greenLabel, blueLabel)
         setValue(for: redTextField, greenTextField, blueTextField)
-        
-        setValueFromTF(for: redSlider, greenSlider, blueSlider)
-        addToolBar(redTextField)
-        addToolBar(greenTextField)
-        addToolBar(blueTextField)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -53,7 +47,6 @@ final class SettingsViewController: UIViewController {
     @IBAction func doneButtonPressed() {
         dismiss(animated: true)
         delegate.setNewValue(for: colorView.backgroundColor ?? .clear)
-        view.endEditing(true)
     }
     
     @IBAction func sliderAction(_ sender: UISlider) {
@@ -86,7 +79,7 @@ final class SettingsViewController: UIViewController {
             }
         }
     }
-        
+    
     private func setValue(for labels: UILabel...) {
         labels.forEach { label in
             switch label {
@@ -109,19 +102,6 @@ final class SettingsViewController: UIViewController {
                 textField.text = string(from: greenSlider)
             default:
                 textField.text = string(from: blueSlider)
-            }
-        }
-    }
-    
-    private func setValueFromTF(for sliders: UISlider...) {
-        sliders.forEach { slider in
-            switch slider {
-            case redSlider:
-                redTextField.delegate = self
-            case greenSlider:
-                greenTextField.delegate = self
-            default:
-                blueTextField.delegate = self
             }
         }
     }
@@ -152,59 +132,83 @@ final class SettingsViewController: UIViewController {
             barButtonSystemItem: .flexibleSpace,
             target: nil,
             action: nil)
-
+        
         toolBar.sizeToFit()
         textField.inputAccessoryView = toolBar
         toolBar.items = [flexibleSpace, doneButton]
     }
-}
-
-// MARK: - UITextFieldDelegate
-extension SettingsViewController: UITextFieldDelegate {
-    func textFieldDidEndEditing(_ textField: UITextField) {
-                
-        guard let newValue = textField.text else { return }
-        if let numberValue = Float(newValue) {
-            switch textField {
-            case redTextField:
-                redSlider.value = numberValue
-                setValue(for: redLabel)
-            case greenTextField:
-                greenSlider.value = numberValue
-                setValue(for: greenLabel)
-            default:
-                blueSlider.value = numberValue
-                setValue(for: blueLabel)
-            }
-            
-            setColor()
-                
-        } else {
-            showAlert(
-                withTitle: "Wrong format",
-                andMessage: "Please enter value in the range from 0.00 to 1.00",
-                for: textField
-            )
-        }
-    }
-}
-
-// MARK: - UIAlertController
-extension SettingsViewController {
+    
     private func showAlert(
-        withTitle title: String,
-        andMessage message: String,
-        for textField: UITextField) {
+        title: String,
+        message: String,
+        textField: UITextField? = nil
+    ) {
         let alert = UIAlertController(
             title: title,
             message: message,
-            preferredStyle: .alert)
+            preferredStyle: .alert
+        )
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in
-            textField.text = "1.00"
+            textField?.text = "1.00"
+            textField?.becomeFirstResponder()
         }
         
         alert.addAction(okAction)
         present(alert, animated: true)
+    }
+}
+
+
+// MARK: - UITextFieldDelegate
+extension SettingsViewController: UITextFieldDelegate {
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let text = textField.text else {
+            showAlert(title: "Wrong value!", message: "Please enter correct value")
+            return
+        }
+        
+        guard let currentValue = Float(text), (0...1).contains(currentValue) else {
+            showAlert(
+                title: "Wrong value!",
+                message: "Please enter correct value",
+                textField: textField
+            )
+            return
+        }
+        
+        switch textField {
+        case redTextField:
+            redSlider.setValue(currentValue, animated: true)
+            setValue(for: redLabel)
+        case greenTextField:
+            greenSlider.setValue(currentValue, animated: true)
+            setValue(for: greenLabel)
+        default:
+            blueSlider.setValue(currentValue, animated: true)
+            setValue(for: blueLabel)
+        }
+        
+        setColor()
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        let keyboardToolbar = UIToolbar()
+        keyboardToolbar.sizeToFit()
+        textField.inputAccessoryView = keyboardToolbar
+        
+        let doneButton = UIBarButtonItem(
+            barButtonSystemItem: .done,
+            target: textField,
+            action: #selector(resignFirstResponder)
+        )
+        
+        let flexBarButton = UIBarButtonItem(
+            barButtonSystemItem: .flexibleSpace,
+            target: nil,
+            action: nil
+        )
+        
+        keyboardToolbar.items = [flexBarButton, doneButton]
     }
 }
 
