@@ -11,7 +11,6 @@ final class SettingsViewController: UIViewController {
     
     // MARK: IBOutlets
     @IBOutlet var colorView: UIView!
-    
     @IBOutlet var redLabel: UILabel!
     @IBOutlet var greenLabel: UILabel!
     @IBOutlet var blueLabel: UILabel!
